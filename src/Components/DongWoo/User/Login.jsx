@@ -14,7 +14,7 @@ const Container = styled.div`
 `;
 
 const InputArea = styled.div`
-    margin-top: 15%;
+    margin-top: 17%;
     width: 800px;
     height: 410px;
     display: flex;
@@ -22,11 +22,21 @@ const InputArea = styled.div`
     flex-direction: row;
     background-color: #3C3E43;
     color: white;
+    overflow-y: auto;
+`;
+
+const modalArea = styled.div`
+
 `;
 
 const SocialDiv = styled.div`
     width: 35%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* 버튼 간격 */
+    width: 300px;
 `;
 
 const RegisterDiv = styled.div`
@@ -97,14 +107,21 @@ const BtnSection = styled.div`
         width: 100%;
         height: 44px;
         margin-top: 15px;
-        background-color: #5865F2;
+        font-weight: bold;
+        font-size: 1.2rem;
+        /* background-color: #01CD9A; */
+        background-image: linear-gradient(108.47038220091133deg, rgba(43, 240, 191,1) 30.898437499999996%,rgba(43, 240, 191,1) 34.371744791666664%,rgba(14, 227, 206,1) 56.68511284722222%,rgba(24, 198, 214,1) 81.41927083333333%);
         transition : 0.7s;
+        transition: background-image 0.5s ease; /* 자연스러운 전환 */
     }
 
     button:hover {
         cursor: pointer;
+        font-weight: bold;
         transition : 0.7s;
-        background-color: #3c48cf;
+        /* background-image: linear-gradient(-108.47038220091133deg, rgba(43, 240, 191,1) 30.898437499999996%, rgba(43, 240, 191,1) 34.371744791666664%, rgba(14, 227, 206,1) 56.68511284722222%, rgba(24, 198, 214,1) 81.41927083333333%); */
+;
+        /* background-color: #04e7af; */
     }
 `;
 const LinkSection = styled.div`
@@ -119,10 +136,33 @@ const LinkSection = styled.div`
 const SocialLogin = styled.div`
     width: 80%;
     height: 20%;
-    background-color: yellow;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
     &:hover {
         cursor: pointer;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
+    
+    img{
+        width: 40px;
+        height: 40px;
+        margin-right: 30px;
+    }
+`;
+
+const Divider = styled.div`
+    border-bottom: 1px solid #ccc;
+    width: 90%;
+    margin-bottom: 25px;
 `;
 
 function Login({data, status}) {
@@ -164,9 +204,13 @@ function Login({data, status}) {
             return;
         }
         axios.post('/test/api/login', user)
-        .then(() => {
-            status(true);
-            nav('/');
+        .then((response) => {
+            if(response.data === 'Login successful'){
+                status(true);
+                nav('/');
+            }else {
+
+            }
         })
         .catch(() => {
                 document.body.style.cursor = 'progress';
@@ -182,17 +226,28 @@ function Login({data, status}) {
 
     const handleSocialLogin = (e) => {
         const socialLogin = e.target.getAttribute('name');
-        const encodeRedi = encodeURI('http://localhost:3000/googleLogin');
         if(socialLogin === 'google'){
+            const encodeRedi = encodeURI('http://localhost:3000/googleLogin');
             const googleOAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?scope=profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&include_granted_scopes=true&response_type=token&redirect_uri=${encodeRedi}&client_id=638388672123-64sgadord0481eq5k9mmj1tab190vjht.apps.googleusercontent.com`;
 
    
-            // window.location.href = googleOAuthUrl;
+            window.location.href = googleOAuthUrl;
 
-            const popup = window.open(googleOAuthUrl, "googleLogin", "width=600,height=400,top=300,left=600");
-            if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-                alert("팝업이 차단되었습니다. 팝업 차단 설정을 확인해주세요.");
-            }
+            // const popup = window.open(googleOAuthUrl, "googleLogin", "width=600,height=400,top=300,left=600");
+            // if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+            //     alert("팝업이 차단되었습니다. 팝업 차단 설정을 확인해주세요.");
+            // }
+        }else if(socialLogin === 'kakao'){
+            const Rest_api_key='d9bf43790e90d7bcc6346f782fe0f8c3' //REST API KEY
+            const redirect_uri = 'http://localhost:3000/kakaoLogin' //Redirect URI
+            const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code&prompt=login`
+
+            window.location.href = kakaoURL;
+
+            // const popup = window.open(kakaoURL, "kakaoLogin", "width=600,height=400,top=300,left=600");
+            // if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+            //     alert("팝업이 차단되었습니다. 팝업 차단 설정을 확인해주세요.");
+            // }
         }
     }
 
@@ -210,80 +265,50 @@ function Login({data, status}) {
     }
     });
 
-    // useEffect(() => {
-    //     // URL에 "code" 매개변수가 있는지 확인하여 Google 로그인이 성공했는지 여부를 확인
-    //     const urlParams = new URLSearchParams(window.location.search);
-    //     const authorizationCode = urlParams.get("code");
-    
-    //     //인증 코드가 있는 경우 사용자를 로그인된 것으로 간주하loggedIn 상태를 true로 설정
-    //     if (authorizationCode) {
-    //         status(true);
-    //     }
-    //   }, []); 
-
-    //   useEffect(() => {
-    //     const params = new URLSearchParams(location.search);
-    //     const authorizationCode = params.get("code");
-    
-    //     if (authorizationCode) {
-    //       // 인증 코드를 토큰으로 교환하기 위해 POST 요청
-    //       const tokenEndpoint = "https://accounts.google.com/o/oauth2/token";
-    //       const data = {
-    //         code: authorizationCode,
-    //         client_id: process.env.REACT_APP_GOOGLE_ID,
-    //         client_secret: process.env.REACT_APP_GOOGLE_PW,
-    //         redirect_uri: "http://localhost:3000/",
-    //         grant_type: "authorization_code",
-    //       };
-    
-    //       axios
-    //         .post(tokenEndpoint, data)
-    //         .then((response) => {
-    //           const accessToken = response.data.access_token;
-    //           const idToken = response.data.id_token;
-    
-    //           // 이 토큰들을 안전하게 저장
-    
-            
-    //           nav.push("/");
-    //         })
-    //         .catch((error) => {
-    //           // 에러 처리
-    //         });
-    //     }
-    //   }, [location.search, nav]);
+    const handleFindPw = (e) => {
+        nav('/findPw');
+    }
 
     return (
         <Container>
             <InputArea>
                 <RegisterDiv>
                     <h2 style={{marginBottom : '0'}}>환영합니다!</h2>
-                    <p style={{color : 'silver' , fontSize : '15px' , margin : 'none'}}>너무 반갑소쩍새</p>
+                    <p style={{color : 'silver' , fontSize : '15px' , margin : 'none'}}>방문해주셔서 감사합니다!</p>
                     <UserInputSection>
                         <p>이메일 <RedStarSpan id='passwordCheck'>*</RedStarSpan> <RedStarSpan id='emailFail1' style={{display : 'none', marginRight : '360px'}}> - 이메일을 입력해주세요.</RedStarSpan>
                         <RedStarSpan id='emailFail2' style={{display : 'none', marginRight : '160px'}}> - 유효하지 않은 이메일 또는 비밀번호 입니다.</RedStarSpan></p>
-                        <input type="text" name='username' value={user.username} placeholder='이메일을 입력해주세요' onChange={handleInputChange}/>
+                        <input type="text" name='username' value={user.username} placeholder='이메일을 입력해주세요' onChange={handleInputChange} onKeyDown={(e) => {if(e.key === 'Enter'){document.querySelector('input[name="password"]').focus()}}}/>
                     </UserInputSection>
                     <UserInputSection>
                         <p>비밀번호 <RedStarSpan id='passwordCheck'>*</RedStarSpan> <RedStarSpan id='passwordFail1' style={{display : 'none', marginRight : '118px'}}> - 비밀번호를 입력해주세요. ( 최소 4글자 )</RedStarSpan>
                         <RedStarSpan id='passwordFail2' style={{display : 'none', marginRight : '118px'}}> - 유효하지 않은 이메일 또는 비밀번호 입니다.</RedStarSpan></p>
-                        <input type="password" name='password' value={user.password} placeholder='비밀번호를 입력해주세요' onChange={handleInputChange}/>
+                        <input type="password" name='password' value={user.password} placeholder='비밀번호를 입력해주세요' onChange={handleInputChange} onKeyDown={(e) => {if(e.key === 'Enter'){handleLoginBtn()}}}/>
                     </UserInputSection>
                     <BtnDiv>
                         <BtnSection>
-                            <button type="button" onClick={handleLoginBtn}>로그인</button>
+                            <button className='gradient-box' type="button" onClick={handleLoginBtn}>로그인</button>
                         </BtnSection>
                         <LinkSection>
                             <span style={{color : 'silver'}}>계정이 필요하신가요?</span> <Link to={'/register'}> 가입하기</Link>
-                            <Link to={'/findPw'} style={{marginLeft : '60px'}}> 비밀번호를 잊으셨나요? </Link>
+                            <span style={{marginLeft : '50px', color : '#007AFF', cursor : 'pointer'}} onClick={handleFindPw}> 비밀번호를 잊으셨나요? </span>
                         </LinkSection>
                     </BtnDiv>
                 </RegisterDiv>
                 <SocialDiv>
-                    <h1>소셜 영역</h1>
-                    <SocialLogin name='google' onClick={handleSocialLogin}>구글 로그인</SocialLogin>
-                    <SocialLogin>네이버 로그인</SocialLogin>
-                    <SocialLogin>카카오 로그인</SocialLogin>
+                    <h2 style={{marginBottom : '0'}}>소셜 로그인</h2>
+                    <p style={{marginTop : '0', color : 'silver', fontSize : '15px', marginBottom : '60px'}}>아래 버튼으로 간단하게 로그인하세요!</p>
+                    <Divider></Divider>
+                    <SocialLogin style={{backgroundColor : 'white', color : '#555', border : '1px solid #ddd'}} className='google' name='google' onClick={handleSocialLogin}>
+                        <img src='../../../images/googleIcon.png' alt='googleIcon' style={{marginRight : '50px'}}/>
+                        구글 로그인
+                    </SocialLogin>
+                    <SocialLogin style={{backgroundColor : '#1ec800', color : 'white'}} className='naver' name='naver'>
+                        <img src='../../../images/naverIcon.png' alt='googleIcon'/>
+                        네이버 로그인</SocialLogin>
+                    <SocialLogin style={{backgroundColor : '#FEE500', color : '#3c1e1e'}} className='kakao' name='kakao' onClick={handleSocialLogin}>
+                        <img src='../../../images/kakaoIcon.png' alt='googleIcon'/>
+                        카카오 로그인</SocialLogin>
                 </SocialDiv>
             </InputArea>
         </Container>

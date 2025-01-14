@@ -6,11 +6,11 @@ import SideLeftCreateRoom1 from './SideLeftCreateRoom1';
 import SideLeftCreateRoom2 from './SideLeftCreateRoom2';
 
 const Container = styled.div`
-height: 100%;
+height: auto;
 overflow-y: hidden;
 border:1px solid #5f5f5f;
 text-align: center;  
-background-color:#181C14;
+background-color:white;
 padding: 10px;
 padding-top: 10px;
 display: flex;
@@ -35,34 +35,43 @@ const Circle = styled.div`
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
   display: flex; 
   align-items: center;
   justify-content: center;
   cursor: pointer;
- 
+  position: relative;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 비율 유지하며 영역 꽉 채움 */
+    border-radius: 50%; /* 이미지도 원형으로 */
+    position: absolute;
+  }
 `
 const Circle1 = styled(Circle)`
-    background-color: rgba(255,255,255,0.5);
-    background-image: url('/images/yoon/plus.webp');
-    margin: 0 auto;
-  
+    background-color:#d6d4d4;
+    background-image: url('//192.168.0.140/uploadImg/logo.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 `
 
-const Circle2 = styled(Circle)`
+const Circle2 = styled(Circle1)`
     width: 50px; 
     height: 50px;
-    background-color:rgb(255,255,255,0.2);
-    background-image: url('/images/yoon/plus.webp');
+    background-color:#4d4c4c;    
     margin: 0 auto;
+    background-image: url('//192.168.0.140/uploadImg/plus.jpg');
+
     
 `
 const Circle3 = styled(Circle2)`
-    background-image: url('/images/yoon/compass.webp');
     margin: 10px auto; 
-    background-size: 60%; 
+    background-image: url('//192.168.0.140/uploadImg/compass.png');
+
 `
 const Li = styled.li`
     list-style-type:none;
@@ -70,20 +79,16 @@ const Li = styled.li`
 
 `
 
+const Divlist = styled.div`
+    margin-bottom:10px;
+`;
+
 const Ul = styled.ul`
     padding: 0;
     
     
 
 `
-const Separator = styled.div`
-    height: 2px;
-    width: 32px;
-    border-radius: 1px;
-    background-color: gray;
-    margin-top: 20px;
-   
-`
 
 
 
@@ -91,37 +96,36 @@ const Separator = styled.div`
 
 
 
-function SideBarLeftArea({data,rightSide,roomStatus}) {
+
+function SideBarLeftArea({ data, rightSide, roomStatus, setRoomNum}) {
 
 
-    const[chatList, setChatList] = useState([]);
+    const [chatList, setChatList] = useState([]);
 
-    const[creatRoom, setCreateRoom] = useState(false);
+    const getChatList = async () => {
+        const response = await axios.get(`/api/room/getChatList/${data.userCode}`);
+        const result = await response.data;
+        setChatList(result);
+    }
+    useEffect(() => {
+        if (data !== null) {
+
+            getChatList();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+    const [creatRoom, setCreateRoom] = useState(false);
 
     const nav = useNavigate();
 
 
 
-    const getChatList = async () => {
-        const response = await axios.get(`/api/room/getChatList/${data.userCode}`);
-        const result = await response.data;
-        // console.log(result);
-        setChatList(result);
-    }
-
-    useEffect(() => {
-        if (data !==null) {
-            // console.log("챗 리스트:" + data.userCode);
-
-            getChatList();
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [data]);
-
     const handleOnclickRoom = (e) => {
-        rightSide('room');
-        nav('/room/' + e.target.getAttribute('num'));
+        // rightSide('room');
+        // nav('/room/' + e.target.getAttribute('num'));
         // roomStatus('chatRoom');
+
+        // setRoomNum(e.target.getAttribute('num'));
     }
 
 
@@ -135,28 +139,32 @@ function SideBarLeftArea({data,rightSide,roomStatus}) {
     }
 
    
+
+
     return (
-      <>
-      <Container>
-    
-        <Circle1 style={{backgroundImage:'url(/images/yoon/logo.png)'}} onClick={handleOnclickLogo}></Circle1>
-        <Separator></Separator>
-        <RoomDiv>
-            <Ul>
-                {chatList.map(list => (
-                    <Li key={list.roomNumber}>
-                        <Circle  style={{backgroundImage:`url('/images/yoon/${list.roomIcon}')`}} num={list.roomNumber} onClick={handleOnclickRoom}></Circle>
-                    </Li>
-                ))}
-                <Circle2 onClick={handleCreateRoom}></Circle2>
-                <Circle3></Circle3>
-            </Ul>
-        </RoomDiv>
-      </Container>
-      
-      <SideLeftCreateRoom1 data={data} create={creatRoom} create1={setCreateRoom} /> 
-     
-    </>
+        <>
+            <Container>
+                <RoomDiv>
+                        {chatList.map(list => (
+                            <Divlist key={list.roomNumber}>
+                                <Circle num={list.roomNumber} onClick={handleOnclickRoom}>
+                                    <img
+                                        src={`/${list.roomIcon}`}
+                                        alt={`${list.roomNumber}`}
+                                        num={list.roomNumber}
+                                        onClick={handleOnclickRoom}
+                                    />
+                                </Circle>                    
+                            </Divlist>
+                        ))}
+                        <Circle2 onClick={handleCreateRoom}></Circle2>
+                        <Circle3></Circle3>
+                </RoomDiv>
+            </Container>
+
+            <SideLeftCreateRoom1 data={data} create={creatRoom} create1={setCreateRoom} />
+
+        </>
 
     );
 }

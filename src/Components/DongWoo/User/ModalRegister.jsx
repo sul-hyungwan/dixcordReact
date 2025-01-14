@@ -67,6 +67,7 @@ const BtnSection = styled.div`
         width: 100%;
         height: 44px;
         margin-top: 15px;
+        background-image: linear-gradient(108.47038220091133deg, rgba(43, 240, 191,1) 30.898437499999996%,rgba(43, 240, 191,1) 34.371744791666664%,rgba(14, 227, 206,1) 56.68511284722222%,rgba(24, 198, 214,1) 81.41927083333333%);
         background-color: #5865F2;
         transition : 0.7s;
     }
@@ -192,7 +193,6 @@ function ModalRegister({user, modalDisplay, inputDisplay, setBackgroundColor}) {
                 document.querySelector('#NickNameFail2').style.display = 'none';
                 axios.get(`/user/api/nickNameCheck?userNickName=${value}`)
                     .then(response => {
-                        console.log(response.data);
                         if(response.data === 'nickNameCheckFail'){
                             setUserNickNameCheck(false);
                             document.querySelector('#NickNameFail').style.display = 'contents';
@@ -280,12 +280,12 @@ function ModalRegister({user, modalDisplay, inputDisplay, setBackgroundColor}) {
                     </div>
                 </HeaderSection>
                 <UserInputSection>
-                    <p>별명 <RedStarSpan id='NickNameFail' style={{display : 'none'}}> - 중복된 별명이에요</RedStarSpan></p>
-                    <input type="text" name="userNickName" onChange={handleChangeInput}/>
+                    <p>닉네임 <RedStarSpan id='NickNameFail' style={{display : 'none'}}> - 중복된 닉네임이에요</RedStarSpan></p>
+                    <input type="text" name="userNickName" onChange={handleChangeInput} maxLength={8}/>
                 </UserInputSection>
                 <RedStarSpan id='NickNameFail2' style={{display : 'none', marginRight : '140px'}}> 닉네임은 최소 2글자 이상이어야 합니다.</RedStarSpan>
                 <UserInputSection>
-                    <p>전화번호</p>
+                    <p>전화번호 <span style={{color : 'silver'}}>( - 제외 숫자만 입력 )</span></p>
                     <input type="text" name="userPhone" onChange={handleChangeInput}/>
                 </UserInputSection>
                 <UserInputSection>
@@ -304,14 +304,14 @@ function ModalRegister({user, modalDisplay, inputDisplay, setBackgroundColor}) {
                     </DateBox>
                 </UserInputSection>
                 <UserInterenstSection id='iconTab'>
-                    <img id='gameIcon' class='interIcon' src="/images/game.png" alt="게임" onClick={handleOnclickImg}/>
-                    <img id='musicIcon' class='interIcon' src="/images/music.png" alt="음악" onClick={handleOnclickImg}/>
-                    <img id='projectIcon' class='interIcon' src="/images/project.png" alt="프로젝트" onClick={handleOnclickImg}/>
-                    <img id='educationIcon' class='interIcon' src="/images/education.png" alt="교육" onClick={handleOnclickImg}/>
-                    <img id='entertainmentIcon' class='interIcon' src="/images/entertainment.png" alt="엔터테인먼트" onClick={handleOnclickImg}/>
-                    <img id='foodIcon' class='interIcon' src="/images/food.png" alt="음식" onClick={handleOnclickImg}/>
-                    <img id='travelIcon' class='interIcon' src="/images/travel.png" alt="여행" onClick={handleOnclickImg}/>
-                    <img id='economyIcon' class='interIcon' src="/images/economy.png" alt="경제" onClick={handleOnclickImg}/>
+                    <img id='gameIcon' className='interIcon' src="/images/game.png" alt="게임" onClick={handleOnclickImg}/>
+                    <img id='musicIcon' className='interIcon' src="/images/music.png" alt="음악" onClick={handleOnclickImg}/>
+                    <img id='projectIcon' className='interIcon' src="/images/project.png" alt="프로젝트" onClick={handleOnclickImg}/>
+                    <img id='educationIcon' className='interIcon' src="/images/education.png" alt="교육" onClick={handleOnclickImg}/>
+                    <img id='entertainmentIcon' className='interIcon' src="/images/entertainment.png" alt="엔터테인먼트" onClick={handleOnclickImg}/>
+                    <img id='foodIcon' className='interIcon' src="/images/food.png" alt="음식" onClick={handleOnclickImg}/>
+                    <img id='travelIcon' className='interIcon' src="/images/travel.png" alt="여행" onClick={handleOnclickImg}/>
+                    <img id='economyIcon' className='interIcon' src="/images/economy.png" alt="경제" onClick={handleOnclickImg}/>
                 </UserInterenstSection>
             </RegisterDiv>
             <BtnDiv>

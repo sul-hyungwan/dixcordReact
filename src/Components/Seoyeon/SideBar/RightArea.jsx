@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import BodyDiv from './BodyDiv'; 
-import FooterDiv from './FooterDiv';  
 
 const RightAreaWrapper = styled.div`
     display: flex;
@@ -10,11 +9,10 @@ const RightAreaWrapper = styled.div`
     overflow: hidden;
 `;
 
-function RightArea({ friendList, openModal }) {
+function RightArea({ friendList, openModal, user }) {
     return (
         <RightAreaWrapper>
-            <BodyDiv friendList={friendList} openModal={openModal} />
-            <FooterDiv friendList={friendList} />
+            <BodyDiv friendList={friendList} openModal={openModal} user={user}/>
         </RightAreaWrapper>
     );
 }
